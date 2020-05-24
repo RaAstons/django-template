@@ -1,12 +1,8 @@
 version: '3.4'
 
-x-environment:
-  &x-environment
-  INITIAL: "${INITIAL:-0}"
-
 services:
   db:
-    image: postgres:9.4
+    image: postgres:9.5
     environment:
       POSTGRES_HOST_AUTH_METHOD: trust
       POSTGRES_PASSWORD:
@@ -16,10 +12,11 @@ services:
     ports:
       - 5432
   backend:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
     command: sh -c 'while true; do ./manage.py runserver 0.0.0.0:8000; sleep 1; done'
     environment:
-      <<: *x-environment
       ALLOWED_HOSTS: >-
         localhost
       DATABASE_URL: postgresql://postgres@db/{{ cookiecutter.project_slug }}
@@ -35,14 +32,12 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile-frontend
+      dockerfile: docker/frontend/Dockerfile
     command: npm start
     volumes:
       - .:/code
     ports:
       - 3000
-    environment:
-      <<: *x-environment
 volumes:
   pgdata:
   venv:

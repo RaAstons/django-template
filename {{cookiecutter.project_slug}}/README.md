@@ -33,13 +33,10 @@ Then point your browser to http://{{ cookiecutter.project_slug|replace('_', '-')
 
 1. Open the file `docker-compose.override.example.yml` and follow the instructions in it
 
-2. Run the command `INITIAL=1 docker-compose up`
+2. Run the command `docker-compose up`
 
 This will start the containers and set up the initial data. To access the site,
 follow the instructions in the `docker-compose.override.example.yml` file.
-
-Note the `INITIAL` flag should not be set for subsequent container starts unless
-you want to reset the database.
 
 ## Automated tests
 

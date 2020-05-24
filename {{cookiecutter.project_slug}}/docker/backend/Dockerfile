@@ -1,9 +1,9 @@
 FROM python:3.7-buster
+ARG DEBIAN_FRONTEND=noninteractive
 
 # Needed to build assets in the deployment process
-RUN set -x; \
-    export DEBIAN_FRONTEND=noninteractive \
-    && echo "deb https://deb.nodesource.com/node_10.x buster main" > /etc/apt/sources.list.d/nodesource.list \
+RUN set -e; \
+    echo "deb https://deb.nodesource.com/node_10.x buster main" > /etc/apt/sources.list.d/nodesource.list \
     && curl -sSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - \
     && apt-get update -qq \
     && apt-get install -yq \
@@ -21,13 +21,15 @@ ENV PYTHONPATH "${PYTHONPATH}:/code"
 ENV VIRTUAL_ENV="/venv"
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-RUN set -x; \
+RUN set -e; \
     groupadd -g $GROUP_ID app && \
     useradd --create-home -u $USER_ID -g app -s /bin/bash app && \
     install -o app -g app -d /code "$VIRTUAL_ENV"
 USER app
 RUN python -m venv "$VIRTUAL_ENV"
+RUN touch $HOME/INITIAL
+
 WORKDIR /code
 
-COPY entrypoint.sh /
+COPY docker/backend/entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]
